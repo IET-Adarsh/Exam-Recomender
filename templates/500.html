@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Server error{% endblock %}
+{% block content %}<section class="card"><h1>Something went wrong</h1><p>An unexpected server error occurred. Check the Flask terminal for details and verify your database connection.</p><a class="btn btn-primary" href="{{ url_for('home') }}">Go to homepage</a></section>{% endblock %}

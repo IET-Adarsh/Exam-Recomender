@@ -1,34 +1,28 @@
 {% extends "base.html" %}
-
 {% block title %}Exams - Exam Recommender{% endblock %}
-
 {% block content %}
 <h1>All exams</h1>
-<p class="muted">Pick a category to narrow the list.</p>
-
+<p class="muted">Search by exam name or authority, or select a category.</p>
+<form class="search-form" method="GET" action="{{ url_for('exams') }}">
+    <input type="search" name="q" value="{{ search_query }}" placeholder="Search exams or conducting authority" aria-label="Search exams">
+    {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+    <button class="btn btn-primary" type="submit">Search</button>
+    <a class="btn btn-outline" href="{{ url_for('exams') }}">Clear</a>
+</form>
 <div class="filter-bar" id="filterBar" data-selected="{{ selected_category if selected_category else 'all' }}">
-    <button type="button" class="filter-btn active" data-filter="all">All</button>
-    {% for category in categories %}
-        <button type="button" class="filter-btn" data-filter="{{ category.category_id }}">{{ category.category_name }}</button>
-    {% endfor %}
+    <button type="button" class="filter-btn" data-filter="all">All</button>
+    {% for category in categories %}<button type="button" class="filter-btn" data-filter="{{ category.category_id }}">{{ category.category_name }}</button>{% endfor %}
 </div>
-
-<p class="result-count" id="resultCount"></p>
-
+<p class="result-count" id="resultCount" aria-live="polite"></p>
 <div class="grid grid-3" id="examGrid">
-    {% for exam in exams %}
-        <article class="card exam-card" data-category="{{ exam.category_id }}">
-            <span class="badge">{{ exam.category_name }}</span>
-            <h3>{{ exam.name }}</h3>
-            <p>{{ (exam.description or 'No description available.')|truncate(110) }}</p>
-            <ul class="meta-list">
-                <li>Exam date: {{ exam.exam_date.strftime('%d %b %Y') if exam.exam_date else 'Not announced' }}</li>
-                <li>Apply by: {{ exam.application_deadline.strftime('%d %b %Y') if exam.application_deadline else 'Not announced' }}</li>
-            </ul>
-            <a class="btn btn-primary btn-small" href="{{ url_for('exam_details', exam_id=exam.exam_id) }}">View details</a>
-        </article>
-    {% endfor %}
+    {% for exam in exams %}<article class="card exam-card" data-category="{{ exam.category_id if exam.category_id is not none else 'uncategorized' }}">
+        <span class="badge">{{ exam.category_name or 'Uncategorized' }}</span>
+        <h3>{{ exam.exam_name }}</h3>
+        <p class="muted">{{ exam.conducting_authority or 'Authority not specified' }}</p>
+        <p>{{ (exam.description or 'No description available.')|truncate(120) }}</p>
+        <ul class="meta-list"><li>Exam date: {{ exam.exam_date.strftime('%d %b %Y') if exam.exam_date else 'Not announced' }}</li><li>Apply by: {{ exam.application_deadline.strftime('%d %b %Y') if exam.application_deadline else 'Not announced' }}</li></ul>
+        <a class="btn btn-primary btn-small" href="{{ url_for('exam_details', exam_id=exam.exam_id) }}">View details</a>
+    </article>{% endfor %}
 </div>
-
-<p class="empty-message" id="emptyMessage" {% if exams %}hidden{% endif %}>No exams found in this category.</p>
+<p class="empty-message" id="emptyMessage" {% if exams %}hidden{% endif %}>No exams found. Try another search or category.</p>
 {% endblock %}

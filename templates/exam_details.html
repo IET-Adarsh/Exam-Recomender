@@ -1,206 +1,51 @@
-
 {% extends "base.html" %}
-
 {% block title %}{{ exam.exam_name }} | Exam Recommender{% endblock %}
-
 {% block content %}
-
-<div class="container">
-
-    <!-- Back Button -->
-    <div class="back-link">
-        <a href="{{ url_for('exams') }}">← Back to Exams</a>
-    </div>
-
-    <!-- Exam Header -->
-    <section class="exam-header">
+<div class="detail-page">
+    <div class="back-link"><a href="{{ url_for('exams') }}">← Back to Exams</a></div>
+    <section class="detail-header card">
+        <span class="badge">{{ exam.category_name or 'Uncategorized' }}</span>
         <h1>{{ exam.exam_name }}</h1>
-
-        <p class="exam-authority">
-            Conducting Authority:
-            <strong>{{ exam.conducting_authority or "Not specified" }}</strong>
-        </p>
-
-        {% if exam.category_name %}
-            <span class="category-badge">
-                {{ exam.category_name }}
-            </span>
-        {% endif %}
+        <p class="muted">Conducting authority: <strong>{{ exam.conducting_authority or 'Not specified' }}</strong></p>
+        <p>{{ exam.description or 'No description available.' }}</p>
     </section>
-
-    <!-- Exam Information -->
-    <section class="exam-section">
-        <h2>Exam Overview</h2>
-
-        <p>
-            {{ exam.description or "No description available." }}
-        </p>
-    </section>
-
-    <!-- Exam Details -->
-    <section class="exam-section">
-        <h2>Important Details</h2>
-
+    <section class="section card">
+        <h2>Important details</h2>
         <div class="details-grid">
-
-            <div class="detail-item">
-                <h4>Conducting Authority</h4>
-                <p>{{ exam.conducting_authority or "Not specified" }}</p>
-            </div>
-
-            <div class="detail-item">
-                <h4>Exam Date</h4>
-                <p>
-                    {{ exam.exam_date.strftime('%d %B %Y') if exam.exam_date else "Not announced" }}
-                </p>
-            </div>
-
-            <div class="detail-item">
-                <h4>Application Deadline</h4>
-                <p>
-                    {{ exam.application_deadline.strftime('%d %B %Y') if exam.application_deadline else "Not announced" }}
-                </p>
-            </div>
-
-            <div class="detail-item">
-                <h4>Exam Pattern</h4>
-                <p>{{ exam.exam_pattern or "Not specified" }}</p>
-            </div>
-
+            <div class="detail-item"><h4>Exam pattern</h4><p>{{ exam.exam_pattern or 'Not specified' }}</p></div>
+            <div class="detail-item"><h4>Exam date</h4><p>{{ exam.exam_date.strftime('%d %B %Y') if exam.exam_date else 'Not announced' }}</p></div>
+            <div class="detail-item"><h4>Application deadline</h4><p>{{ exam.application_deadline.strftime('%d %B %Y') if exam.application_deadline else 'Not announced' }}</p></div>
         </div>
     </section>
-
-    <!-- Eligibility Criteria -->
-    <section class="exam-section">
-        <h2>Eligibility Criteria</h2>
-
+    <section class="section card">
+        <h2>Eligibility criteria</h2>
         {% if exam.criteria %}
-
-            <div class="details-grid">
-
-                <div class="detail-item">
-                    <h4>Required Qualification</h4>
-                    <p>{{ exam.criteria.qualification or "Not specified" }}</p>
-                </div>
-
-                <div class="detail-item">
-                    <h4>Required Stream</h4>
-                    <p>{{ exam.criteria.stream or "Any" }}</p>
-                </div>
-
-                <div class="detail-item">
-                    <h4>Minimum Age</h4>
-                    <p>{{ exam.criteria.min_age if exam.criteria.min_age is not none else "Not specified" }}</p>
-                </div>
-
-                <div class="detail-item">
-                    <h4>Maximum Age</h4>
-                    <p>{{ exam.criteria.max_age if exam.criteria.max_age is not none else "Not specified" }}</p>
-                </div>
-
-                <div class="detail-item">
-                    <h4>Minimum Percentage</h4>
-                    <p>
-                        {% if exam.criteria.min_percentage is not none %}
-                            {{ exam.criteria.min_percentage }}%
-                        {% else %}
-                            Not specified
-                        {% endif %}
-                    </p>
-                </div>
-
-            </div>
-
-            {% if exam.criteria.additional_requirements %}
-                <div class="additional-requirements">
-                    <h4>Additional Requirements</h4>
-                    <p>{{ exam.criteria.additional_requirements }}</p>
-                </div>
-            {% endif %}
-
-        {% else %}
-            <p>Eligibility criteria are currently unavailable.</p>
-        {% endif %}
-    </section>
-
-    <!-- Student Eligibility Result -->
-    {% if session.get('student_id') %}
-
-        <section class="exam-section eligibility-section">
-            <h2>Your Eligibility Status</h2>
-
-            {% if eligibility %}
-
-                {% if eligibility.eligible %}
-                    <div class="eligibility-status eligible">
-                        <h3>✓ You are Eligible</h3>
-                        <p>You meet the eligibility conditions currently stored for this exam.</p>
-                    </div>
-                {% else %}
-                    <div class="eligibility-status not-eligible">
-                        <h3>✗ You are Not Eligible</h3>
-                        <p>{{ eligibility.status }}</p>
-                    </div>
-                {% endif %}
-
-                {% if eligibility.match_score is not none %}
-                    <p class="match-score">
-                        Criteria Match: {{ eligibility.match_score }}%
-                    </p>
-                {% endif %}
-
-            {% else %}
-                <p>Eligibility could not be calculated. Please check your profile details.</p>
-            {% endif %}
-
-        </section>
-
-    {% else %}
-
-        <section class="exam-section login-prompt">
-            <h2>Check Your Eligibility</h2>
-            <p>Login to check whether you are eligible for this examination.</p>
-
-            <a href="{{ url_for('auth') }}" class="btn btn-primary">
-                Login / Register
-            </a>
-        </section>
-
-    {% endif %}
-
-    <!-- Official Links -->
-    <section class="exam-section">
-        <h2>Official Links</h2>
-
-        <div class="official-links">
-
-            {% if exam.application_link %}
-                <a href="{{ exam.application_link }}"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="btn btn-primary">
-                    Apply Online ↗
-                </a>
-            {% endif %}
-
-            {% if exam.notification_link %}
-                <a href="{{ exam.notification_link }}"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="btn btn-secondary">
-                    Official Notification ↗
-                </a>
-            {% endif %}
-
+        <div class="details-grid">
+            <div class="detail-item"><h4>Required qualification</h4><p>{{ exam.criteria.qualification or 'Not specified' }}</p></div>
+            <div class="detail-item"><h4>Required stream</h4><p>{{ exam.criteria.stream or 'Any' }}</p></div>
+            <div class="detail-item"><h4>Minimum age</h4><p>{{ exam.criteria.min_age if exam.criteria.min_age is not none else 'Not specified' }}</p></div>
+            <div class="detail-item"><h4>Maximum age</h4><p>{{ exam.criteria.max_age if exam.criteria.max_age is not none else 'Not specified' }}</p></div>
+            <div class="detail-item"><h4>Minimum percentage</h4><p>{{ exam.criteria.min_percentage|string + '%' if exam.criteria.min_percentage is not none else 'Not specified' }}</p></div>
         </div>
+        {% if exam.criteria.additional_requirements %}<div class="additional-requirements"><h4>Additional requirements / notes</h4><p>{{ exam.criteria.additional_requirements }}</p></div>{% endif %}
+        {% else %}<p>Eligibility criteria are currently unavailable.</p>{% endif %}
     </section>
-
-    <p class="disclaimer">
-        Note: Eligibility information is for reference only.
-        Always verify the latest eligibility conditions from the
-        official examination notification before applying.
-    </p>
-
+    {% if session.get('student_id') %}
+    <section class="section card eligibility-section">
+        <h2>Your eligibility status</h2>
+        {% if eligibility %}
+            <div class="eligibility-status {{ 'eligible' if eligibility.eligible else 'not-eligible' }}"><h3>{{ '✓ You meet the stored criteria' if eligibility.eligible else '✗ You do not meet all stored criteria' }}</h3><p>{{ eligibility.status }}</p></div>
+            <p class="match-score">Criteria match: {{ eligibility.match_score }}% <span class="muted">(not a probability)</span></p>
+        {% else %}<p>Eligibility could not be calculated. Check your profile details.</p>{% endif %}
+    </section>
+    {% else %}
+    <section class="section card login-prompt"><h2>Check your eligibility</h2><p>Login to compare your profile with this exam's stored criteria.</p><a href="{{ url_for('auth') }}" class="btn btn-primary">Login / Register</a></section>
+    {% endif %}
+    <section class="section card"><h2>Official links</h2><div class="official-links">
+        {% if exam.application_link %}<a href="{{ exam.application_link }}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Application / Official Website ↗</a>{% endif %}
+        {% if exam.notification_link %}<a href="{{ exam.notification_link }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Notification ↗</a>{% endif %}
+        {% if not exam.application_link and not exam.notification_link %}<p>No official links have been added yet.</p>{% endif %}
+    </div></section>
+    <p class="disclaimer">Eligibility data is for guidance only. Always verify age, subject, category, qualification, passing-year and other conditions in the latest official notification before applying.</p>
 </div>
-
 {% endblock %}
