@@ -38,7 +38,6 @@ python app.py
 Open http://127.0.0.1:5000. Use `/test-db` to check the database connection.
 
 ## Notes
-- Do not upload `.env`, `venv/`, or database passwords to GitHub.
 - The seed data is an initial sample catalogue, not a complete or permanently current list of examinations.
 - Eligibility uses the first criteria row stored for an exam and simplified qualification-level/stream rules. Real exam rules can depend on age cut-offs, category, subject combinations, degree branch, passing year, nationality and the current notification. Always verify official notices before applying.
 - `match_score` is a criteria-match percentage, not a probability of selection or admission.
